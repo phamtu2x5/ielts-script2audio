@@ -1,0 +1,21 @@
+{
+  "backend": "kokoro",
+  "lang_code": "b",
+  "locale": "en-GB",
+  "notes": "Part 3 lab casting — 3 distinct GB voices. Confirm confusability by listening.",
+  "mapping": {
+    "vp_tutor": {
+      "backend_voice_id": "bm_george",
+      "role_hint": "Tutor"
+    },
+    "vp_stu_a": {
+      "backend_voice_id": "bf_emma",
+      "role_hint": "Student A"
+    },
+    "vp_stu_b": {
+      "backend_voice_id": "bm_fable",
+      "role_hint": "Student B"
+    }
+  },
+  "fallback_voice": "bf_emma"
+}

@@ -1,0 +1,50 @@
+{
+  "transcript_id": "ex-part3-valid-001",
+  "part": 3,
+  "locale": "en-GB",
+  "delivery_profile": "content_only",
+  "speakers": [
+    {
+      "speaker_id": "tutor",
+      "role": "content",
+      "label": "Tutor"
+    },
+    {
+      "speaker_id": "stu_a",
+      "role": "content",
+      "label": "Student A"
+    },
+    {
+      "speaker_id": "stu_b",
+      "role": "content",
+      "label": "Student B"
+    }
+  ],
+  "utterances": [
+    {
+      "event_id": "e001",
+      "speaker_id": "tutor",
+      "display_text": "Today we'll discuss urban transport policies."
+    },
+    {
+      "event_id": "e002",
+      "speaker_id": "stu_a",
+      "display_text": "I think congestion charges can work if they're fair."
+    },
+    {
+      "event_id": "e003",
+      "speaker_id": "stu_b",
+      "display_text": "But what about people who need to drive for work?"
+    },
+    {
+      "event_id": "e004",
+      "speaker_id": "tutor",
+      "display_text": "Good point. Let's compare two cities next week."
+    }
+  ],
+  "answer_bearing_spans": [],
+  "metadata": {
+    "source": "synthetic_example",
+    "note": "Part 3 with 3 content speakers; not official IELTS"
+  }
+}

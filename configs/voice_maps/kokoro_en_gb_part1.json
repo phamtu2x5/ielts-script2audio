@@ -1,0 +1,19 @@
+{
+  "backend": "kokoro",
+  "lang_code": "b",
+  "locale": "en-GB",
+  "notes": "Fixed voice IDs for Part 1 lab. Map abstract voice_profile_id → Kokoro voice. Not a final casting decision.",
+  "mapping": {
+    "vp_spk_a": {
+      "backend_voice_id": "bf_emma",
+      "role_hint": "Receptionist / content A",
+      "grade_desk": "B-"
+    },
+    "vp_spk_b": {
+      "backend_voice_id": "bm_george",
+      "role_hint": "Caller / content B",
+      "grade_desk": "C"
+    }
+  },
+  "fallback_voice": "bf_emma"
+}

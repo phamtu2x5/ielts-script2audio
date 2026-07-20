@@ -1,0 +1,70 @@
+{
+  "transcript_id": "ex-part1-valid-001",
+  "part": 1,
+  "locale": "en-GB",
+  "delivery_profile": "content_only",
+  "speakers": [
+    {
+      "speaker_id": "spk_a",
+      "role": "content",
+      "label": "Receptionist"
+    },
+    {
+      "speaker_id": "spk_b",
+      "role": "content",
+      "label": "Caller"
+    }
+  ],
+  "utterances": [
+    {
+      "event_id": "e001",
+      "speaker_id": "spk_a",
+      "display_text": "Good morning, City Library. How can I help you?"
+    },
+    {
+      "event_id": "e002",
+      "speaker_id": "spk_b",
+      "display_text": "Hello. I'd like to join the library, please."
+    },
+    {
+      "event_id": "e003",
+      "speaker_id": "spk_a",
+      "display_text": "Certainly. Can I take your full name?"
+    },
+    {
+      "event_id": "e004",
+      "speaker_id": "spk_b",
+      "display_text": "It's Sarah Thompson. That's T-H-O-M-P-S-O-N."
+    },
+    {
+      "event_id": "e005",
+      "speaker_id": "spk_a",
+      "display_text": "Thank you. And your postcode?"
+    },
+    {
+      "event_id": "e006",
+      "speaker_id": "spk_b",
+      "display_text": "SW1A 1AA."
+    }
+  ],
+  "answer_bearing_spans": [
+    {
+      "span_id": "ans_name",
+      "event_id": "e004",
+      "start_char": 5,
+      "end_char": 19,
+      "label": "full_name"
+    },
+    {
+      "span_id": "ans_postcode",
+      "event_id": "e006",
+      "start_char": 0,
+      "end_char": 8,
+      "label": "postcode"
+    }
+  ],
+  "metadata": {
+    "source": "synthetic_example",
+    "note": "Not an official IELTS transcript"
+  }
+}

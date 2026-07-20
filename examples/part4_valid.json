@@ -1,0 +1,35 @@
+{
+  "transcript_id": "ex-part4-valid-001",
+  "part": 4,
+  "locale": "en-GB",
+  "delivery_profile": "content_only",
+  "speakers": [
+    {
+      "speaker_id": "lecturer",
+      "role": "content",
+      "label": "Lecturer"
+    }
+  ],
+  "utterances": [
+    {
+      "event_id": "e001",
+      "speaker_id": "lecturer",
+      "display_text": "In this lecture I'll outline the main stages of coral reef formation."
+    },
+    {
+      "event_id": "e002",
+      "speaker_id": "lecturer",
+      "display_text": "First, volcanic islands provide a base for coral polyps to settle."
+    },
+    {
+      "event_id": "e003",
+      "speaker_id": "lecturer",
+      "display_text": "Over time, the island may subside while the reef continues to grow."
+    }
+  ],
+  "answer_bearing_spans": [],
+  "metadata": {
+    "source": "synthetic_example",
+    "note": "Part 4 monologue; not official IELTS"
+  }
+}

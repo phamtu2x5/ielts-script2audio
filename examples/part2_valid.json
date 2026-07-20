@@ -1,0 +1,30 @@
+{
+  "transcript_id": "ex-part2-valid-001",
+  "part": 2,
+  "locale": "en-GB",
+  "delivery_profile": "content_only",
+  "speakers": [
+    {
+      "speaker_id": "guide",
+      "role": "content",
+      "label": "Tour guide"
+    }
+  ],
+  "utterances": [
+    {
+      "event_id": "e001",
+      "speaker_id": "guide",
+      "display_text": "Welcome to the Riverside Museum."
+    },
+    {
+      "event_id": "e002",
+      "speaker_id": "guide",
+      "display_text": "We'll begin in the main hall and then move to the gallery on the first floor."
+    }
+  ],
+  "answer_bearing_spans": [],
+  "metadata": {
+    "source": "synthetic_example",
+    "note": "Part 2 monologue without answer spans (optional field empty)"
+  }
+}

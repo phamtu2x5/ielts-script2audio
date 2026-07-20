@@ -1,0 +1,24 @@
+{
+  "transcript_id": "ex-part1-invalid-speakers",
+  "part": 1,
+  "locale": "en-GB",
+  "delivery_profile": "content_only",
+  "speakers": [
+    {
+      "speaker_id": "spk_only",
+      "role": "content",
+      "label": "Solo"
+    }
+  ],
+  "utterances": [
+    {
+      "event_id": "e001",
+      "speaker_id": "spk_only",
+      "display_text": "This Part 1 transcript incorrectly has only one content speaker."
+    }
+  ],
+  "answer_bearing_spans": [],
+  "metadata": {
+    "source": "synthetic_negative_example"
+  }
+}
