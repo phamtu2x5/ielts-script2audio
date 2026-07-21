@@ -84,6 +84,12 @@ def render_manifest(
     manifest = _load_json(manifest_path)
     voice_map = _load_json(voice_map_path)
     requests = list(manifest.get("requests") or [])
+    # requests may omit event_id; join from segments[] for tracking
+    event_by_segment = {
+        s.get("segment_id"): s.get("event_id")
+        for s in (manifest.get("segments") or [])
+        if s.get("segment_id")
+    }
     if limit is not None:
         requests = requests[:limit]
 
@@ -133,14 +139,24 @@ def render_manifest(
         item: dict[str, Any] = {
             "segment_id": seg_id,
             "request_id": req.get("request_id"),
+            "event_id": req.get("event_id") or event_by_segment.get(seg_id),
             "speaker_id": req.get("speaker_id"),
             "voice_profile_id": vp,
             "backend_voice_id": voice_id,
             "lang_code": lang_code,
-            "text_preview": text[:80],
+            # Full texts for human tracking (do not truncate — needed to verify content)
+            "display_text": req.get("display_text") or "",
+            "spoken_text": req.get("spoken_text") or "",
+            "text_fed_to_tts": text,
+            "text_field_used": "spoken_text" if use_spoken_text else "display_text",
+            "protected_region_ids": list(req.get("protected_region_ids") or []),
             "status": "PENDING",
             "output": None,
+            "output_filename": None,
             "error": None,
+            # Filled by human in notebook / tracking sheet
+            "human_content_match": None,
+            "human_notes": None,
         }
 
         try:
@@ -181,12 +197,15 @@ def render_manifest(
                 raise RuntimeError("Kokoro returned no audio chunks")
 
             audio_out = np.concatenate(chunks)
-            out_path = out_dir / f"{seg_id}__{voice_id}.wav"
+            out_name = f"{seg_id}__{voice_id}.wav"
+            out_path = out_dir / out_name
             _write_wav_pcm16(out_path, audio_out, sample_rate)
             item["status"] = "EXECUTED"
             item["output"] = str(out_path)
+            item["output_filename"] = out_name
             item["num_samples"] = int(audio_out.shape[0])
             item["sample_rate"] = sample_rate
+            item["duration_sec"] = round(float(audio_out.shape[0]) / float(sample_rate), 3)
             report["ok_count"] += 1
         except Exception as exc:  # lab must record failures honestly
             item["status"] = "FAILED"
@@ -194,15 +213,93 @@ def render_manifest(
             report["fail_count"] += 1
 
         report["segments"].append(item)
-        print(json.dumps(item, ensure_ascii=False))
+        # stdout: one compact line per segment for live tracking
+        print(
+            json.dumps(
+                {
+                    "segment_id": item["segment_id"],
+                    "speaker_id": item["speaker_id"],
+                    "backend_voice_id": item["backend_voice_id"],
+                    "status": item["status"],
+                    "output_filename": item.get("output_filename"),
+                    "spoken_text": item.get("spoken_text"),
+                    "error": item.get("error"),
+                },
+                ensure_ascii=False,
+            )
+        )
 
     report_path = out_dir / "lab_render_report.json"
     report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+    # Human-readable tracking sheet (CSV) — open in Sheets / Excel / notebook
+    tracking_csv = out_dir / "segment_tracking.csv"
+    _write_tracking_csv(tracking_csv, report["segments"])
+
+    # Empty review template for human marks (content match per line)
+    review_path = out_dir / "segment_review_template.json"
+    _write_review_template(review_path, report["segments"])
+
     print(f"Wrote {report_path}", file=sys.stderr)
+    print(f"Wrote {tracking_csv}", file=sys.stderr)
+    print(f"Wrote {review_path}", file=sys.stderr)
     return report
+
+
+def _write_tracking_csv(path: Path, segments: list[dict[str, Any]]) -> None:
+    import csv
+
+    fields = [
+        "segment_id",
+        "event_id",
+        "speaker_id",
+        "backend_voice_id",
+        "status",
+        "output_filename",
+        "duration_sec",
+        "display_text",
+        "spoken_text",
+        "text_fed_to_tts",
+        "protected_region_ids",
+        "error",
+        "human_content_match",
+        "human_notes",
+    ]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as fh:
+        writer = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")
+        writer.writeheader()
+        for seg in segments:
+            row = {k: seg.get(k) for k in fields}
+            # CSV-friendly list
+            pr = row.get("protected_region_ids") or []
+            row["protected_region_ids"] = "|".join(pr) if isinstance(pr, list) else pr
+            writer.writerow(row)
+
+
+def _write_review_template(path: Path, segments: list[dict[str, Any]]) -> None:
+    """Template for human marks: content_match = yes | partial | no | skip."""
+    rows = []
+    for seg in segments:
+        rows.append(
+            {
+                "segment_id": seg.get("segment_id"),
+                "output_filename": seg.get("output_filename"),
+                "speaker_id": seg.get("speaker_id"),
+                "display_text": seg.get("display_text"),
+                "spoken_text": seg.get("spoken_text"),
+                "text_fed_to_tts": seg.get("text_fed_to_tts"),
+                # Fill after listening:
+                "content_match": "",  # yes | partial | no | skip
+                "matches_display_or_spoken": "",  # display | spoken | both | neither
+                "issues": [],  # e.g. "wrong words", "missing spelling", "wrong speaker"
+                "notes": "",
+            }
+        )
+    path.write_text(json.dumps(rows, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:
