@@ -42,7 +42,9 @@ def test_normalise_preserves_display_text():
     u = _utt("e1", "a", "It's Sarah Thompson. That's T-H-O-M-P-S-O-N.")
     p = normalise_utterance(u)
     assert p.display_text == u.display_text
-    assert "T-H-O-M-P-S-O-N" not in p.spoken_text or "T H O M P S O N" in p.spoken_text
+    # Paced spelling uses commas so TTS slows letter-by-letter
+    assert "T, H, O, M, P, S, O, N" in p.spoken_text
+    assert "T-H-O-M-P-S-O-N" not in p.spoken_text
     assert any(c.kind == "spelling_sequence" for c in p.normalisation_changes)
 
 
@@ -51,8 +53,9 @@ def test_normalise_postcode():
     p = normalise_utterance(u)
     assert p.display_text == "SW1A 1AA."
     assert any(c.kind == "postcode" for c in p.normalisation_changes)
-    # Digits spoken as words
+    # Digits spoken as words; commas pace items
     assert "one" in p.spoken_text.lower()
+    assert ", " in p.spoken_text
 
 
 def test_normalise_currency_and_time():
@@ -70,8 +73,11 @@ def test_prepare_part1_example_manifest():
     assert manifest is not None
     assert manifest.validation.valid is True
     assert manifest.schema_version == "stage2.v1"
+    # Expanded Part 1 lab fixture
+    assert len(manifest.prepared_utterances) == 15
     assert len(manifest.prepared_utterances) == len(manifest.segments)
     assert len(manifest.requests) == len(manifest.segments)
+    assert len(manifest.protected_regions) == 4
     assert manifest.step_status.render == PipelineStepStatus.NOT_EXECUTED
     assert manifest.step_status.manifest == PipelineStepStatus.EXECUTED
     assert manifest.metadata.get("provider_neutral") is True
@@ -83,10 +89,12 @@ def test_prepare_part1_example_manifest():
         assert prep.display_text == src["display_text"]
 
     # protected regions from answer spans
-    assert len(manifest.protected_regions) == 2
+    assert len(manifest.protected_regions) == 4
     assert {r.region_id for r in manifest.protected_regions} == {
         "ans_name",
         "ans_postcode",
+        "ans_phone",
+        "ans_fee",
     }
 
     # voice profiles abstract

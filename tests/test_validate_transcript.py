@@ -254,7 +254,7 @@ def test_example_part1_valid_file():
     assert report.valid is True
     assert report.speaker_map is not None
     assert report.speaker_map.content_speaker_count == 2
-    assert report.answer_bearing_span_count == 2
+    assert report.answer_bearing_span_count == 4
 
 
 def test_example_part1_invalid_speaker_count_file():
