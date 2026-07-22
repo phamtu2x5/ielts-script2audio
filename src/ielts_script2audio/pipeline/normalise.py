@@ -95,22 +95,31 @@ def _int_to_en(n: int) -> str:
     return " ".join(_ONES[int(ch)] if ch.isdigit() else ch for ch in str(n))
 
 
-def _paced_join(parts: list[str]) -> str:
-    """Join tokens with commas so TTS tends to pause between items.
+def _paced_join(parts: list[str], *, mode: str = "codes") -> str:
+    """Join tokens with pause cues so plain TTS reads more slowly.
 
     Used for spelling / postcode / phone-style sequences. Does not change
     display_text; only spoken pacing for engines without SSML.
+
+    mode:
+      - codes: stronger pauses (letters/digits that must stay intelligible)
+      - light: milder pauses
     """
     cleaned = [p for p in parts if p]
     if not cleaned:
         return ""
-    # "T, H, O, M" — comma+space is a widely observed slow-down cue for plain TTS
+    if len(cleaned) == 1:
+        return cleaned[0]
+    # Ellipsis + comma gives a stronger boundary than comma alone for many engines.
+    # Example: "T... H... O... M"
+    if mode == "codes":
+        return "... ".join(cleaned)
     return ", ".join(cleaned)
 
 
 def _spell_out_letters(token: str) -> str:
     letters = re.findall(r"[A-Za-z]", token)
-    return _paced_join([ch.upper() for ch in letters])
+    return _paced_join([ch.upper() for ch in letters], mode="codes")
 
 
 def _speak_postcode(token: str) -> str:
@@ -121,7 +130,7 @@ def _speak_postcode(token: str) -> str:
             parts.append(ch)
         elif ch.isdigit():
             parts.append(_ONES[int(ch)])
-    return _paced_join(parts)
+    return _paced_join(parts, mode="codes")
 
 
 def _speak_currency(symbol: str, amount: str) -> str:
@@ -179,7 +188,7 @@ def _speak_time(h: str, m: str, ampm: str | None) -> str:
 
 def _speak_phone(token: str) -> str:
     digits = re.findall(r"\d", token)
-    return _paced_join([_ONES[int(d)] for d in digits])
+    return _paced_join([_ONES[int(d)] for d in digits], mode="codes")
 
 
 def _speak_number_token(token: str) -> str:

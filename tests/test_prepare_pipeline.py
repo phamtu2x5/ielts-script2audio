@@ -42,8 +42,8 @@ def test_normalise_preserves_display_text():
     u = _utt("e1", "a", "It's Sarah Thompson. That's T-H-O-M-P-S-O-N.")
     p = normalise_utterance(u)
     assert p.display_text == u.display_text
-    # Paced spelling uses commas so TTS slows letter-by-letter
-    assert "T, H, O, M, P, S, O, N" in p.spoken_text
+    # Stronger pacing: ellipsis between letters for slower letter-by-letter TTS
+    assert "T... H... O... M... P... S... O... N" in p.spoken_text
     assert "T-H-O-M-P-S-O-N" not in p.spoken_text
     assert any(c.kind == "spelling_sequence" for c in p.normalisation_changes)
 
@@ -53,9 +53,9 @@ def test_normalise_postcode():
     p = normalise_utterance(u)
     assert p.display_text == "SW1A 1AA."
     assert any(c.kind == "postcode" for c in p.normalisation_changes)
-    # Digits spoken as words; commas pace items
+    # Digits spoken as words; ellipsis paces items
     assert "one" in p.spoken_text.lower()
-    assert ", " in p.spoken_text
+    assert "..." in p.spoken_text
 
 
 def test_normalise_currency_and_time():
