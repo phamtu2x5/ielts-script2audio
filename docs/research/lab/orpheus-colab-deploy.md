@@ -62,3 +62,27 @@ Ignore most pip warnings about google-adk/cuml/jax/opencv **unless** `from orphe
 - Stage 1–2: `ielts-s2a prepare` → manifest (unchanged).
 - Lab: `scripts/lab_render_orpheus_from_manifest.py` maps `voice_profile_id` → tara/leo.
 - Do not install this stack on the user laptop ([[feedback-no-heavy-local-packages]]).
+
+
+## Hard rule for `numpy.dtype size changed`
+
+**Do not import vllm/Orpheus in the same kernel session immediately after `pip install --force-reinstall numpy`.**
+
+Binary extensions already loaded in the process keep the old ABI. Symptoms:
+
+```text
+ValueError: numpy.dtype size changed, may indicate binary incompatibility.
+Expected 96 from C header, got 88 from PyObject
+```
+
+### Fix that actually works on Colab
+
+1. Run **install-only** cell (pip only).
+2. **Runtime → Restart session** (or Disconnect and delete runtime if repeated failures).
+3. Run **import-check** cell (import numpy/torch/vllm/OrpheusModel only).
+4. Only then prepare + render.
+
+If import still fails after restart: **Delete runtime**, new GPU, full reinstall once, restart once, import once.
+
+Pin used in project notebook: `numpy==1.26.4`, `vllm==0.7.3`, `pillow==10.4.0`, package `orpheus-speech` (not `orpheus-tts`).
+
