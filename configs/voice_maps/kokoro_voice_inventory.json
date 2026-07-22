@@ -1,0 +1,60 @@
+{
+  "backend": "kokoro",
+  "notes": "Desk inventory for lab voice survey only. Grades from Kokoro VOICES.md (training-data quality estimate). Not final casting.",
+  "locales": {
+    "en-GB": {
+      "lang_code": "b",
+      "voices": [
+        {"id": "bf_alice", "gender": "f", "grade_desk": "D"},
+        {"id": "bf_emma", "gender": "f", "grade_desk": "B-"},
+        {"id": "bf_isabella", "gender": "f", "grade_desk": "C"},
+        {"id": "bf_lily", "gender": "f", "grade_desk": "D"},
+        {"id": "bm_daniel", "gender": "m", "grade_desk": "D"},
+        {"id": "bm_fable", "gender": "m", "grade_desk": "C"},
+        {"id": "bm_george", "gender": "m", "grade_desk": "C"},
+        {"id": "bm_lewis", "gender": "m", "grade_desk": "D+"}
+      ]
+    },
+    "en-US": {
+      "lang_code": "a",
+      "voices": [
+        {"id": "af_heart", "gender": "f", "grade_desk": "A"},
+        {"id": "af_bella", "gender": "f", "grade_desk": "A-"},
+        {"id": "af_nicole", "gender": "f", "grade_desk": "B-"},
+        {"id": "af_sarah", "gender": "f", "grade_desk": "C+"},
+        {"id": "af_sky", "gender": "f", "grade_desk": "C-"},
+        {"id": "am_adam", "gender": "m", "grade_desk": "F+"},
+        {"id": "am_michael", "gender": "m", "grade_desk": "C+"},
+        {"id": "am_fenrir", "gender": "m", "grade_desk": "C+"},
+        {"id": "am_puck", "gender": "m", "grade_desk": "C+"},
+        {"id": "am_echo", "gender": "m", "grade_desk": "D"}
+      ]
+    }
+  },
+  "lab_presets": {
+    "gb_core": {
+      "description": "All 8 British voices — primary survey for this project locale",
+      "locale": "en-GB",
+      "voice_ids": [
+        "bf_alice",
+        "bf_emma",
+        "bf_isabella",
+        "bf_lily",
+        "bm_daniel",
+        "bm_fable",
+        "bm_george",
+        "bm_lewis"
+      ]
+    },
+    "gb_shortlist": {
+      "description": "Higher desk-grade GB voices first",
+      "locale": "en-GB",
+      "voice_ids": ["bf_emma", "bm_george", "bm_fable", "bf_isabella"]
+    },
+    "us_sample": {
+      "description": "Optional US sample (not default project locale)",
+      "locale": "en-US",
+      "voice_ids": ["af_heart", "af_bella", "am_michael", "am_fenrir"]
+    }
+  }
+}

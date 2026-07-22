@@ -23,6 +23,27 @@ Not production Stage 4. Not final model selection.
 - Light on Colab
 - Clear map from `vp_spk_a` / `vp_spk_b`
 
+### Multi-voice survey (same lines, many Kokoro IDs)
+
+After `prepare` has produced `outputs/part1_manifest.json`:
+
+```bash
+python scripts/lab_survey_kokoro_voices.py \
+  --manifest outputs/part1_manifest.json \
+  --inventory configs/voice_maps/kokoro_voice_inventory.json \
+  --preset gb_core \
+  --out-dir lab_audio/kokoro_voice_survey \
+  --event-ids e004,e006,e008,e011
+```
+
+| Preset | Voices |
+|--------|--------|
+| `gb_core` | All 8 British (`bf_*` / `bm_*`) |
+| `gb_shortlist` | emma, george, fable, isabella |
+| `us_sample` | Optional 4 US voices |
+
+Notebook section **§8** walks through listening **by event_id** (same SPOKEN, different voices).
+
 ### Files
 | File | Role |
 |------|------|
