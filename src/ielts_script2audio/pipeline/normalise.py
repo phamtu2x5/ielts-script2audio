@@ -146,8 +146,9 @@ def _speak_postcode(token: str) -> str:
         return token
     if len(spoken_chunks) == 1:
         return spoken_chunks[0]
-    # Slightly stronger boundary between postcode halves than within a half
-    return "... ; ... ".join(spoken_chunks)
+    # Stronger boundary between postcode halves — ellipsis only (no ';' —
+    # some TTS engines vocalise semicolon as a word or odd glottal).
+    return "... ... ".join(spoken_chunks)
 
 
 def _speak_currency(symbol: str, amount: str) -> str:
@@ -220,7 +221,8 @@ def _speak_phone(token: str) -> str:
         )
     if len(spoken_groups) == 1:
         return spoken_groups[0]
-    return "... ; ... ".join(spoken_groups)
+    # Group boundary with ellipsis only (no ';' — avoid odd spoken "semicolon")
+    return "... ... ".join(spoken_groups)
 
 
 def _speak_number_token(token: str) -> str:

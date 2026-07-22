@@ -58,7 +58,9 @@ def test_normalise_postcode():
     # Digits as words; outward/inward groups; no doubled final A
     assert "one" in p.spoken_text.lower()
     assert "..." in p.spoken_text
-    assert ";" in p.spoken_text  # space in postcode → group boundary
+    assert ";" not in p.spoken_text
+    # space in postcode → longer ellipsis gap between halves
+    assert "... ..." in p.spoken_text
     # no end-anchor echo of final A
     assert "A... A... A" not in p.spoken_text
     assert re.search(r"A\.?\s*$", p.spoken_text.rstrip())
@@ -71,8 +73,9 @@ def test_normalise_phone_grouped_no_echo():
     assert "eight" in p.spoken_text.lower()
     # exactly one final eight (no end-anchor repeat)
     assert p.spoken_text.lower().count("eight") == 1
-    # group boundary preserved from original spacing
-    assert ";" in p.spoken_text or p.spoken_text.count("...") >= 2
+    assert ";" not in p.spoken_text
+    # group boundary from original spacing via double ellipsis
+    assert "... ..." in p.spoken_text
 
 
 def test_normalise_currency_and_time():
