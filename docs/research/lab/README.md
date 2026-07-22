@@ -132,6 +132,8 @@ pip install vllm==0.7.3   # required on many Colab images: avoids libcudart.so.1
 # Runtime → Restart session, then re-import
 ```
 
+If you see `numpy.dtype size changed` after install: **Runtime → Restart session**, re-run the install cell (notebook forces `numpy==1.26.4` then `vllm==0.7.3`). Do not chase every Colab dependency conflict warning (google-adk/cuml/etc.) unless import still fails.
+
 If you still see `libcudart.so.13`, the vLLM wheel expects CUDA 13 while Colab has CUDA 12.x — pin `vllm==0.7.3` or use the [official Orpheus Colab](https://colab.research.google.com/drive/1KhXT56UePPUHhqitJNUxq63k-pQomz3N).
 
 Model: `canopylabs/orpheus-tts-0.1-finetune-prod`  
