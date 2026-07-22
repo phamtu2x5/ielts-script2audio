@@ -56,72 +56,32 @@ Not production Stage 4. Not final model selection.
 6. Listen + fill checklist.  
 7. Write short notes in `notes-kokoro-part1.md` (create when done).
 
-## Tracking từng câu audio vs nội dung (quan trọng)
+## Tracking từng câu (một cách duy nhất trong notebook)
 
-Sau khi render, **đừng** chỉ mở lung tung các file `.wav`. Dùng một trong các cách sau — mỗi cách gắn **một audio** với **đúng** `display_text` / `spoken_text`.
+Notebook **chỉ** dùng một phương pháp:
 
-### Cách 1 — Trong notebook (dễ nhất)
+1. Cell **§5**: lần lượt từng segment — in `DISPLAY` + `SPOKEN` + `Audio()`.  
+2. Cell **§5b**: điền dict `reviews` (`yes` / `partial` / `no` + notes) → lưu `segment_review_filled.json`.
 
-Cell **§5** sau khi render:
+Không dùng HTML table / CSV / terminal **trong notebook** (tránh nhiễu).  
+CSV/`lab_show_segment_tracking.py` vẫn có thể có từ script render (phụ, ngoài notebook) nếu cần export sau.
 
-1. Hiện **bảng HTML**: mỗi hàng = segment + script + spoken + nút play.  
-2. Bên dưới: in chi tiết + `Audio()` từng đoạn.  
-3. Cell **§5b**: điền `reviews = { "seg_0001": {"content_match": "yes", "notes": "..."}, ... }` rồi lưu `segment_review_filled.json`.
+### Cách đối chiếu
 
-### Cách 2 — File CSV (Excel / Google Sheets)
+Với mỗi segment:
 
-Renderer tự tạo:
+1. Đọc `DISPLAY` (script gốc — không sửa).  
+2. Đọc `SPOKEN` (text Stage-2 đưa TTS).  
+3. Nghe audio ngay dưới.  
+4. Ghi `yes` / `partial` / `no` trong `reviews`.  
 
-`lab_audio/kokoro_part1/segment_tracking.csv`
-
-Cột chính:
-
-| Cột | Ý nghĩa |
-|-----|---------|
-| `segment_id` | id đoạn (khớp tên file wav) |
-| `speaker_id` | ai nói |
-| `backend_voice_id` | giọng Kokoro |
-| `display_text` | chữ script gốc |
-| `spoken_text` | chữ Stage-2 đưa TTS |
-| `output_filename` | tên file wav |
-| `human_content_match` | bạn điền: yes / partial / no |
-| `human_notes` | ghi chú |
-
-Cách dùng: mở CSV → nghe đúng `output_filename` → điền 2 cột human.
-
-### Cách 3 — Terminal
-
-```bash
-python scripts/lab_show_segment_tracking.py \
-  --report lab_audio/kokoro_part1/lab_render_report.json
-```
-
-In từng block: DISPLAY / SPOKEN / file — để tick tay.
-
-### Cách đối chiếu “có đúng nội dung không”
-
-Với **mỗi** hàng:
-
-1. Đọc `display_text` (nội dung “đúng” của script — không sửa).  
-2. Đọc `spoken_text` (cách máy được bảo đọc; có thể khác display, vd. spelling).  
-3. Nghe audio.  
-4. Hỏi:
-   - Có **đúng speaker** (giọng A/B) không?  
-   - Nội dung nghe được có **khớp ý** script không?  
-   - Chỗ spelling/postcode: có bám `spoken_text` không?  
-5. Ghi `yes` / `partial` / `no` + notes.  
-6. **Không** sửa transcript cho “khớp audio”; nếu script sai → báo owner.
-
-### Files sau một lần render đầy đủ
+### Files chính sau lab
 
 ```text
 lab_audio/kokoro_part1/
-  seg_0001__bf_emma.wav
-  ...
-  lab_render_report.json          # machine report + full texts
-  segment_tracking.csv            # sheet tracking
-  segment_review_template.json    # template đánh giá
-  segment_review_filled.json      # (sau khi bạn điền ở notebook §5b)
+  seg_*.wav
+  lab_render_report.json
+  segment_review_filled.json   # sau §5b
 ```
 
 ## Compatibility questions this lab answers
