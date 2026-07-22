@@ -124,12 +124,15 @@ Notebook: `notebooks/colab_orpheus_manifest_lab.ipynb`
 | Dialogue render | `scripts/lab_render_orpheus_from_manifest.py` |
 | Multi-voice survey | `scripts/lab_survey_orpheus_voices.py` |
 
-Install (local open-weight, **not** paid API):
+Install (local open-weight, **not** paid API) — **on Colab only**:
 
 ```bash
 pip install orpheus-speech
-# if vLLM breaks: pip install vllm==0.7.3
+pip install vllm==0.7.3   # required on many Colab images: avoids libcudart.so.13 mismatch
+# Runtime → Restart session, then re-import
 ```
+
+If you still see `libcudart.so.13`, the vLLM wheel expects CUDA 13 while Colab has CUDA 12.x — pin `vllm==0.7.3` or use the [official Orpheus Colab](https://colab.research.google.com/drive/1KhXT56UePPUHhqitJNUxq63k-pQomz3N).
 
 Model: `canopylabs/orpheus-tts-0.1-finetune-prod`  
 Voices: `tara, leah, jess, leo, dan, mia, zac, zoe` (no official en-GB bank).

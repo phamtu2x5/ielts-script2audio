@@ -118,14 +118,21 @@ def render_manifest(
 ) -> dict[str, Any]:
     try:
         from orpheus_tts import OrpheusModel
-    except ImportError as exc:
+    except Exception as exc:
+        # ImportError OR OSError (e.g. missing libcudart.so.13 from wrong vLLM wheel)
         raise SystemExit(
             "orpheus_tts / OrpheusModel not available.\n"
-            "Install local open-weight stack (not API client):\n"
+            "Common Colab cause: vLLM wheel expects CUDA 13 (libcudart.so.13) but "
+            "runtime only has CUDA 12.x.\n\n"
+            "Fix on Colab (open-weight, not API):\n"
+            "  pip uninstall -y orpheus-tts 2>/dev/null || true\n"
             "  pip install orpheus-speech\n"
-            "  # if vLLM breaks: pip install vllm==0.7.3\n"
-            "See https://github.com/canopyai/Orpheus-TTS\n"
-            f"Original error: {exc}"
+            "  pip install vllm==0.7.3\n"
+            "  Runtime → Restart session, re-run install\n\n"
+            "Official Orpheus Colab: "
+            "https://colab.research.google.com/drive/1KhXT56UePPUHhqitJNUxq63k-pQomz3N\n"
+            "Upstream: https://github.com/canopyai/Orpheus-TTS\n"
+            f"Original error: {type(exc).__name__}: {exc}"
         ) from exc
 
     manifest = _load_json(manifest_path)
