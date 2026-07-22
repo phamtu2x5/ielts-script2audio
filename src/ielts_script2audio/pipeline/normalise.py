@@ -101,29 +101,22 @@ def _paced_join(parts: list[str], *, mode: str = "codes") -> str:
     Used for spelling / postcode / phone-style sequences. Does not change
     display_text; only spoken pacing for engines without SSML.
 
+    Does **not** repeat the final token (that sounds like a content error).
+    Trailing audio silence for cut-off issues belongs in the lab renderer.
+
     mode:
       - codes: stronger pauses (letters/digits that must stay intelligible)
       - light: milder pauses
-
-    For codes, the final token is reinforced so engines are less likely to
-    swallow the last letter/digit (common with trailing ellipsis chains).
     """
     cleaned = [p for p in parts if p]
     if not cleaned:
         return ""
-    if mode != "codes":
-        if len(cleaned) == 1:
-            return cleaned[0]
-        return ", ".join(cleaned)
-
-    # Strong inter-item pauses: "T... H... O"
-    body = "... ".join(cleaned)
-    last = cleaned[-1]
-    # End-anchor: repeat last item once more after a pause (no extra '.' —
-    # the surrounding sentence usually already has punctuation).
-    # Helps Kokoro-class engines finish the final character/digit clearly.
-    # Example: "S... W... one... A... one... A... A... A"
-    return f"{body}... {last}"
+    if len(cleaned) == 1:
+        return cleaned[0]
+    if mode == "codes":
+        # "T... H... O... N" — pause between items, no doubled last token
+        return "... ".join(cleaned)
+    return ", ".join(cleaned)
 
 
 def _spell_out_letters(token: str) -> str:
@@ -132,14 +125,29 @@ def _spell_out_letters(token: str) -> str:
 
 
 def _speak_postcode(token: str) -> str:
-    compact = re.sub(r"\s+", "", token.upper())
-    parts: list[str] = []
-    for ch in compact:
-        if ch.isalpha():
-            parts.append(ch)
-        elif ch.isdigit():
-            parts.append(_ONES[int(ch)])
-    return _paced_join(parts, mode="codes")
+    """Speak postcode with outward/inward grouping when spacing is present.
+
+    Example: SW1A 1AA → "S... W... one... A... one... A... A"
+    (space in original becomes a longer spoken boundary via '; ')
+    """
+    chunks = re.split(r"\s+", token.strip())
+    spoken_chunks: list[str] = []
+    for chunk in chunks:
+        compact = re.sub(r"\s+", "", chunk.upper())
+        parts: list[str] = []
+        for ch in compact:
+            if ch.isalpha():
+                parts.append(ch)
+            elif ch.isdigit():
+                parts.append(_ONES[int(ch)])
+        if parts:
+            spoken_chunks.append(_paced_join(parts, mode="codes"))
+    if not spoken_chunks:
+        return token
+    if len(spoken_chunks) == 1:
+        return spoken_chunks[0]
+    # Slightly stronger boundary between postcode halves than within a half
+    return "... ; ... ".join(spoken_chunks)
 
 
 def _speak_currency(symbol: str, amount: str) -> str:
@@ -196,8 +204,23 @@ def _speak_time(h: str, m: str, ampm: str | None) -> str:
 
 
 def _speak_phone(token: str) -> str:
-    digits = re.findall(r"\d", token)
-    return _paced_join([_ONES[int(d)] for d in digits], mode="codes")
+    """Speak phone using original spacing as group boundaries (no double/triple).
+
+    Example: 020 7946 0958
+      → "zero... two... zero... ; ... seven... nine... four... six... ; ... zero... nine... five... eight"
+    """
+    # Prefer digit groups as written; fall back to flat digits
+    groups = re.findall(r"\d+", token)
+    if not groups:
+        return token
+    spoken_groups: list[str] = []
+    for group in groups:
+        spoken_groups.append(
+            _paced_join([_ONES[int(d)] for d in group], mode="codes")
+        )
+    if len(spoken_groups) == 1:
+        return spoken_groups[0]
+    return "... ; ... ".join(spoken_groups)
 
 
 def _speak_number_token(token: str) -> str:

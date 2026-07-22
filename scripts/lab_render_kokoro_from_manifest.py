@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import wave
 from pathlib import Path
@@ -47,19 +48,62 @@ def _resolve_voice(
     return fallback, voice_map.get("lang_code", "b")
 
 
-def _write_wav_pcm16(path: Path, audio, sample_rate: int) -> None:
+def _write_wav_pcm16(
+    path: Path,
+    audio,
+    sample_rate: int,
+    *,
+    end_pad_ms: int = 0,
+) -> None:
     import numpy as np
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    arr = np.asarray(audio, dtype=np.float32)
-    # clip and convert to int16
+    arr = np.asarray(audio, dtype=np.float32).reshape(-1)
+    # clip
     arr = np.clip(arr, -1.0, 1.0)
+    pad_ms = max(0, int(end_pad_ms))
+    if pad_ms > 0:
+        # Trailing silence so the last phoneme is not cut off by the engine/player.
+        # This does NOT re-speak content (unlike repeating the last letter/digit).
+        n_pad = int(sample_rate * pad_ms / 1000)
+        if n_pad > 0:
+            arr = np.concatenate([arr, np.zeros(n_pad, dtype=np.float32)])
     pcm = (arr * 32767.0).astype(np.int16)
     with wave.open(str(path), "wb") as wf:
         wf.setnchannels(1)
         wf.setsampwidth(2)
         wf.setframerate(sample_rate)
         wf.writeframes(pcm.tobytes())
+
+
+def _end_pad_ms_for_request(req: dict[str, Any], default_ms: int, codes_ms: int) -> int:
+    """Extra tail silence for code-like / protected segments."""
+    protected = req.get("protected_region_ids") or []
+    spoken = (req.get("spoken_text") or "").lower()
+    # Heuristic: paced letter/digit chains from Stage-2 codes
+    looks_like_code = (
+        "..." in (req.get("spoken_text") or "")
+        and any(
+            token in spoken
+            for token in (
+                " zero",
+                " one",
+                " two",
+                " three",
+                " four",
+                " five",
+                " six",
+                " seven",
+                " eight",
+                " nine",
+            )
+        )
+    )
+    # single-letter chains: "t... h... o"
+    letter_chain = bool(re.search(r"\b[A-Z](?:\.\.\. [A-Z]){2,}\b", req.get("spoken_text") or ""))
+    if protected or looks_like_code or letter_chain:
+        return max(default_ms, codes_ms)
+    return default_ms
 
 
 def render_manifest(
@@ -69,6 +113,8 @@ def render_manifest(
     *,
     use_spoken_text: bool = True,
     limit: int | None = None,
+    end_pad_ms: int = 250,
+    codes_end_pad_ms: int = 550,
 ) -> dict[str, Any]:
     try:
         from kokoro import KPipeline
@@ -100,6 +146,8 @@ def render_manifest(
         "transcript_id": manifest.get("transcript_id"),
         "backend": "kokoro",
         "text_field_used": "spoken_text" if use_spoken_text else "display_text",
+        "end_pad_ms_default": end_pad_ms,
+        "codes_end_pad_ms": codes_end_pad_ms,
         "segments": [],
         "ok_count": 0,
         "fail_count": 0,
@@ -199,13 +247,22 @@ def render_manifest(
             audio_out = np.concatenate(chunks)
             out_name = f"{seg_id}__{voice_id}.wav"
             out_path = out_dir / out_name
-            _write_wav_pcm16(out_path, audio_out, sample_rate)
+            pad_ms = _end_pad_ms_for_request(req, end_pad_ms, codes_end_pad_ms)
+            _write_wav_pcm16(
+                out_path,
+                audio_out,
+                sample_rate,
+                end_pad_ms=pad_ms,
+            )
             item["status"] = "EXECUTED"
             item["output"] = str(out_path)
             item["output_filename"] = out_name
-            item["num_samples"] = int(audio_out.shape[0])
+            item["end_pad_ms"] = pad_ms
+            # duration includes pad (what is on disk)
+            n_samples = int(audio_out.shape[0]) + int(sample_rate * pad_ms / 1000)
+            item["num_samples"] = n_samples
             item["sample_rate"] = sample_rate
-            item["duration_sec"] = round(float(audio_out.shape[0]) / float(sample_rate), 3)
+            item["duration_sec"] = round(float(n_samples) / float(sample_rate), 3)
             report["ok_count"] += 1
         except Exception as exc:  # lab must record failures honestly
             item["status"] = "FAILED"
@@ -335,6 +392,18 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Only first N requests (smoke)",
     )
+    parser.add_argument(
+        "--end-pad-ms",
+        type=int,
+        default=250,
+        help="Trailing silence (ms) appended to every segment wav",
+    )
+    parser.add_argument(
+        "--codes-end-pad-ms",
+        type=int,
+        default=550,
+        help="Trailing silence (ms) for protected/code-like segments (spelling/postcode/phone)",
+    )
     args = parser.parse_args(argv)
 
     report = render_manifest(
@@ -343,6 +412,8 @@ def main(argv: list[str] | None = None) -> int:
         args.out_dir,
         use_spoken_text=not args.use_display_text,
         limit=args.limit,
+        end_pad_ms=args.end_pad_ms,
+        codes_end_pad_ms=args.codes_end_pad_ms,
     )
     return 0 if report["fail_count"] == 0 else 1
 

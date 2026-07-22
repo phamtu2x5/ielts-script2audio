@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from ielts_script2audio.models.input_transcript import (
@@ -42,8 +43,9 @@ def test_normalise_preserves_display_text():
     u = _utt("e1", "a", "It's Sarah Thompson. That's T-H-O-M-P-S-O-N.")
     p = normalise_utterance(u)
     assert p.display_text == u.display_text
-    # Stronger pacing + end-anchor so last letter is less often swallowed
-    assert "T... H... O... M... P... S... O... N... N" in p.spoken_text
+    # Pacing without repeating the final letter (no end-anchor echo)
+    assert "T... H... O... M... P... S... O... N" in p.spoken_text
+    assert "N... N" not in p.spoken_text
     assert "T-H-O-M-P-S-O-N" not in p.spoken_text
     assert any(c.kind == "spelling_sequence" for c in p.normalisation_changes)
 
@@ -53,19 +55,24 @@ def test_normalise_postcode():
     p = normalise_utterance(u)
     assert p.display_text == "SW1A 1AA."
     assert any(c.kind == "postcode" for c in p.normalisation_changes)
-    # Digits spoken as words; ellipsis paces items; last A reinforced
+    # Digits as words; outward/inward groups; no doubled final A
     assert "one" in p.spoken_text.lower()
-    assert "A... A" in p.spoken_text
-    assert p.spoken_text.count("A") >= 3  # ... A ... A ... A (end anchor)
+    assert "..." in p.spoken_text
+    assert ";" in p.spoken_text  # space in postcode → group boundary
+    # no end-anchor echo of final A
+    assert "A... A... A" not in p.spoken_text
+    assert re.search(r"A\.?\s*$", p.spoken_text.rstrip())
 
 
-def test_normalise_phone_end_anchor():
+def test_normalise_phone_grouped_no_echo():
     u = _utt("e1", "a", "Call 020 7946 0958.")
     p = normalise_utterance(u)
     assert p.display_text == u.display_text
     assert "eight" in p.spoken_text.lower()
-    # last digit reinforced
-    assert p.spoken_text.lower().count("eight") >= 2
+    # exactly one final eight (no end-anchor repeat)
+    assert p.spoken_text.lower().count("eight") == 1
+    # group boundary preserved from original spacing
+    assert ";" in p.spoken_text or p.spoken_text.count("...") >= 2
 
 
 def test_normalise_currency_and_time():
