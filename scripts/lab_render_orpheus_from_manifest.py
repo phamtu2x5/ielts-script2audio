@@ -68,6 +68,36 @@ def _end_pad_ms_for_request(req: dict[str, Any], default_ms: int, codes_ms: int)
     return default_ms
 
 
+def _build_orpheus_model(
+    OrpheusModel: Any,
+    model_id: str,
+    *,
+    max_model_len: int = 2048,
+) -> Any:
+    """Construct OrpheusModel across package versions.
+
+    Some installs accept ``max_model_len=...`` (README example). Others only take
+    ``model_name`` / ``**engine_kwargs`` and reject ``max_model_len`` as a direct
+    keyword — that caused Cell 6 TypeError on Colab.
+    """
+    attempts: list[dict[str, Any]] = [
+        {"model_name": model_id, "max_model_len": max_model_len},
+        {"model_name": model_id},
+    ]
+    errors: list[str] = []
+    for kwargs in attempts:
+        try:
+            print(f"OrpheusModel(**{kwargs})", file=sys.stderr)
+            return OrpheusModel(**kwargs)
+        except TypeError as exc:
+            errors.append(f"{kwargs}: {exc}")
+            continue
+    raise TypeError(
+        "Could not construct OrpheusModel with known signatures. "
+        + " | ".join(errors)
+    )
+
+
 def _generate_pcm(
     model: Any,
     text: str,
@@ -78,14 +108,29 @@ def _generate_pcm(
     max_tokens: int,
 ) -> bytes:
     chunks: list[bytes] = []
-    # OrpheusModel.generate_speech yields audio byte chunks (int16 PCM)
-    stream = model.generate_speech(
-        prompt=text,
-        voice=voice,
-        temperature=temperature,
-        repetition_penalty=repetition_penalty,
-        max_tokens=max_tokens,
-    )
+    # Try full sampling kwargs; fall back if this package version is stricter.
+    call_attempts = [
+        dict(
+            prompt=text,
+            voice=voice,
+            temperature=temperature,
+            repetition_penalty=repetition_penalty,
+            max_tokens=max_tokens,
+        ),
+        dict(prompt=text, voice=voice),
+    ]
+    last_exc: Exception | None = None
+    stream = None
+    for kwargs in call_attempts:
+        try:
+            stream = model.generate_speech(**kwargs)
+            break
+        except TypeError as exc:
+            last_exc = exc
+            continue
+    if stream is None:
+        raise TypeError(f"generate_speech signature mismatch: {last_exc}")
+
     for audio_chunk in stream:
         if audio_chunk is None:
             continue
@@ -151,8 +196,10 @@ def render_manifest(
     if limit is not None:
         requests = requests[:limit]
 
-    print(f"Loading OrpheusModel {model_id} (max_model_len={max_model_len})...", file=sys.stderr)
-    model = OrpheusModel(model_name=model_id, max_model_len=max_model_len)
+    print(f"Loading OrpheusModel {model_id} ...", file=sys.stderr)
+    model = _build_orpheus_model(
+        OrpheusModel, model_id, max_model_len=max_model_len
+    )
 
     report: dict[str, Any] = {
         "manifest_id": manifest.get("manifest_id"),

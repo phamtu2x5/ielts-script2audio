@@ -112,7 +112,13 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("no voices selected")
 
     print(f"Loading {model_id} ...", file=sys.stderr)
-    model = OrpheusModel(model_name=model_id, max_model_len=args.max_model_len)
+    # Compatible with package variants that reject max_model_len kwarg
+    try:
+        model = OrpheusModel(
+            model_name=model_id, max_model_len=args.max_model_len
+        )
+    except TypeError:
+        model = OrpheusModel(model_name=model_id)
 
     out_dir = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
