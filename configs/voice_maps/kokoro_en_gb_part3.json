@@ -2,20 +2,38 @@
   "backend": "kokoro",
   "lang_code": "b",
   "locale": "en-GB",
-  "notes": "Part 3 lab casting — 3 distinct GB voices. Confirm confusability by listening.",
+  "notes": "Part 3 lab casting from human OK shortlist (2026-07-22). 3 distinct GB voices. Not final.",
   "mapping": {
     "vp_tutor": {
       "backend_voice_id": "bm_george",
-      "role_hint": "Tutor"
+      "role_hint": "Tutor",
+      "lab_status": "ok"
     },
     "vp_stu_a": {
       "backend_voice_id": "bf_emma",
-      "role_hint": "Student A"
+      "role_hint": "Student A",
+      "lab_status": "ok"
     },
     "vp_stu_b": {
-      "backend_voice_id": "bm_fable",
-      "role_hint": "Student B"
+      "backend_voice_id": "bm_lewis",
+      "role_hint": "Student B",
+      "lab_status": "ok"
     }
   },
-  "fallback_voice": "bf_emma"
+  "fallback_voice": "bf_emma",
+  "allowed_voices": [
+    "bf_alice",
+    "bf_emma",
+    "bf_lily",
+    "bm_daniel",
+    "bm_george",
+    "bm_lewis"
+  ],
+  "four_speaker_option": {
+    "vp_tutor": "bm_george",
+    "vp_stu_a": "bf_emma",
+    "vp_stu_b": "bm_lewis",
+    "vp_stu_c": "bf_lily",
+    "notes": "If Part 3 has 4 content speakers — all from OK shortlist"
+  }
 }

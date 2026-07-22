@@ -2,18 +2,38 @@
   "backend": "kokoro",
   "lang_code": "b",
   "locale": "en-GB",
-  "notes": "Fixed voice IDs for Part 1 lab. Map abstract voice_profile_id → Kokoro voice. Not a final casting decision.",
+  "notes": "Part 1 lab casting from human shortlist (2026-07-22). Only voices marked OK in docs/research/lab/notes-kokoro-voice-survey.md. Not final production casting.",
   "mapping": {
     "vp_spk_a": {
       "backend_voice_id": "bf_emma",
       "role_hint": "Receptionist / content A",
-      "grade_desk": "B-"
+      "lab_status": "ok"
     },
     "vp_spk_b": {
       "backend_voice_id": "bm_george",
       "role_hint": "Caller / content B",
-      "grade_desk": "C"
+      "lab_status": "ok"
     }
   },
-  "fallback_voice": "bf_emma"
+  "fallback_voice": "bf_emma",
+  "allowed_voices": [
+    "bf_alice",
+    "bf_emma",
+    "bf_lily",
+    "bm_daniel",
+    "bm_george",
+    "bm_lewis"
+  ],
+  "alternate_pairs": [
+    {
+      "vp_spk_a": "bf_lily",
+      "vp_spk_b": "bm_lewis",
+      "notes": "Alternate OK pair"
+    },
+    {
+      "vp_spk_a": "bf_alice",
+      "vp_spk_b": "bm_daniel",
+      "notes": "Alternate OK pair"
+    }
+  ]
 }

@@ -33,7 +33,7 @@
   },
   "lab_presets": {
     "gb_core": {
-      "description": "All 8 British voices — primary survey for this project locale",
+      "description": "All 8 British voices — full survey",
       "locale": "en-GB",
       "voice_ids": [
         "bf_alice",
@@ -46,8 +46,20 @@
         "bm_lewis"
       ]
     },
+    "gb_ok": {
+      "description": "Human lab OK shortlist 2026-07-22 (see docs/research/lab/notes-kokoro-voice-survey.md)",
+      "locale": "en-GB",
+      "voice_ids": [
+        "bf_alice",
+        "bf_emma",
+        "bf_lily",
+        "bm_daniel",
+        "bm_george",
+        "bm_lewis"
+      ]
+    },
     "gb_shortlist": {
-      "description": "Higher desk-grade GB voices first",
+      "description": "Deprecated desk-only shortlist; prefer gb_ok after human listen",
       "locale": "en-GB",
       "voice_ids": ["bf_emma", "bm_george", "bm_fable", "bf_isabella"]
     },
