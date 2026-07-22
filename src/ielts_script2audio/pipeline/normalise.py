@@ -104,17 +104,26 @@ def _paced_join(parts: list[str], *, mode: str = "codes") -> str:
     mode:
       - codes: stronger pauses (letters/digits that must stay intelligible)
       - light: milder pauses
+
+    For codes, the final token is reinforced so engines are less likely to
+    swallow the last letter/digit (common with trailing ellipsis chains).
     """
     cleaned = [p for p in parts if p]
     if not cleaned:
         return ""
-    if len(cleaned) == 1:
-        return cleaned[0]
-    # Ellipsis + comma gives a stronger boundary than comma alone for many engines.
-    # Example: "T... H... O... M"
-    if mode == "codes":
-        return "... ".join(cleaned)
-    return ", ".join(cleaned)
+    if mode != "codes":
+        if len(cleaned) == 1:
+            return cleaned[0]
+        return ", ".join(cleaned)
+
+    # Strong inter-item pauses: "T... H... O"
+    body = "... ".join(cleaned)
+    last = cleaned[-1]
+    # End-anchor: repeat last item once more after a pause (no extra '.' —
+    # the surrounding sentence usually already has punctuation).
+    # Helps Kokoro-class engines finish the final character/digit clearly.
+    # Example: "S... W... one... A... one... A... A... A"
+    return f"{body}... {last}"
 
 
 def _spell_out_letters(token: str) -> str:

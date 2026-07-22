@@ -42,8 +42,8 @@ def test_normalise_preserves_display_text():
     u = _utt("e1", "a", "It's Sarah Thompson. That's T-H-O-M-P-S-O-N.")
     p = normalise_utterance(u)
     assert p.display_text == u.display_text
-    # Stronger pacing: ellipsis between letters for slower letter-by-letter TTS
-    assert "T... H... O... M... P... S... O... N" in p.spoken_text
+    # Stronger pacing + end-anchor so last letter is less often swallowed
+    assert "T... H... O... M... P... S... O... N... N" in p.spoken_text
     assert "T-H-O-M-P-S-O-N" not in p.spoken_text
     assert any(c.kind == "spelling_sequence" for c in p.normalisation_changes)
 
@@ -53,9 +53,19 @@ def test_normalise_postcode():
     p = normalise_utterance(u)
     assert p.display_text == "SW1A 1AA."
     assert any(c.kind == "postcode" for c in p.normalisation_changes)
-    # Digits spoken as words; ellipsis paces items
+    # Digits spoken as words; ellipsis paces items; last A reinforced
     assert "one" in p.spoken_text.lower()
-    assert "..." in p.spoken_text
+    assert "A... A" in p.spoken_text
+    assert p.spoken_text.count("A") >= 3  # ... A ... A ... A (end anchor)
+
+
+def test_normalise_phone_end_anchor():
+    u = _utt("e1", "a", "Call 020 7946 0958.")
+    p = normalise_utterance(u)
+    assert p.display_text == u.display_text
+    assert "eight" in p.spoken_text.lower()
+    # last digit reinforced
+    assert p.spoken_text.lower().count("eight") >= 2
 
 
 def test_normalise_currency_and_time():
