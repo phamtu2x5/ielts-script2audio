@@ -115,7 +115,8 @@ lab_audio/kokoro_part1/
 
 ## Orpheus lab (second backend)
 
-Notebook: `notebooks/colab_orpheus_manifest_lab.ipynb`
+Notebook: `notebooks/colab_orpheus_manifest_lab.ipynb`  
+Deploy/troubleshoot: [`orpheus-colab-deploy.md`](orpheus-colab-deploy.md)
 
 | Item | Path |
 |------|------|
