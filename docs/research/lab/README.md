@@ -113,10 +113,34 @@ lab_audio/kokoro_part1/
 4. Any crash / empty audio / install blocker on Colab?  
 5. Per segment: does audio **content** match display/spoken expectations?
 
+## Orpheus lab (second backend)
+
+Notebook: `notebooks/colab_orpheus_manifest_lab.ipynb`
+
+| Item | Path |
+|------|------|
+| Part 1 voice map | `configs/voice_maps/orpheus_en_part1.json` (tara / leo) |
+| Inventory + presets | `configs/voice_maps/orpheus_voice_inventory.json` |
+| Dialogue render | `scripts/lab_render_orpheus_from_manifest.py` |
+| Multi-voice survey | `scripts/lab_survey_orpheus_voices.py` |
+
+Install (local open-weight, **not** paid API):
+
+```bash
+pip install orpheus-speech
+# if vLLM breaks: pip install vllm==0.7.3
+```
+
+Model: `canopylabs/orpheus-tts-0.1-finetune-prod`  
+Voices: `tara, leah, jess, leo, dan, mia, zac, zoe` (no official en-GB bank).
+
+Uses the **same** `ielts-s2a prepare` manifest as Kokoro for fair comparison.
+
 ## Status
 
 | Item | Status |
 |------|--------|
-| Lab assets in repo | Ready |
-| Audio render in this agent session | `NOT_EXECUTED` (needs Colab/GPU + kokoro install) |
+| Kokoro lab assets | Ready |
+| Orpheus lab assets | Ready (notebook + scripts) |
+| Audio render in agent session | `NOT_EXECUTED` (needs your Colab/GPU) |
 | Final TTS selection | `not_selected` |

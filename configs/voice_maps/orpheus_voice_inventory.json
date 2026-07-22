@@ -1,0 +1,35 @@
+{
+  "backend": "orpheus",
+  "model_name": "canopylabs/orpheus-tts-0.1-finetune-prod",
+  "notes": "English finetune-prod fixed voice names (upstream Canopy docs). No official en-GB bank. Lab only.",
+  "voices": [
+    {"id": "tara", "notes": "Upstream conversational ranking #1 (subjective)"},
+    {"id": "leah", "notes": "#2"},
+    {"id": "jess", "notes": "#3"},
+    {"id": "leo", "notes": "#4"},
+    {"id": "dan", "notes": "#5"},
+    {"id": "mia", "notes": "#6"},
+    {"id": "zac", "notes": "#7"},
+    {"id": "zoe", "notes": "#8"}
+  ],
+  "lab_presets": {
+    "en_all": {
+      "description": "All 8 English fixed names",
+      "voice_ids": ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
+    },
+    "en_pair": {
+      "description": "Default Part 1 pair for dialogue lab",
+      "voice_ids": ["tara", "leo"]
+    },
+    "en_shortlist": {
+      "description": "Smaller multi-voice survey",
+      "voice_ids": ["tara", "leah", "leo", "dan"]
+    }
+  },
+  "install_notes": [
+    "Local open-weight path uses package orpheus-speech + vLLM (not PyPI orpheus-tts API client).",
+    "Upstream tip: if vLLM breaks, try pip install vllm==0.7.3 after orpheus-speech.",
+    "Model: canopylabs/orpheus-tts-0.1-finetune-prod",
+    "Official Colab reference: https://colab.research.google.com/drive/1KhXT56UePPUHhqitJNUxq63k-pQomz3N"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "backend": "orpheus",
+  "model_name": "canopylabs/orpheus-tts-0.1-finetune-prod",
+  "locale": "en",
+  "notes": "Lab casting for Orpheus finetune-prod fixed names. Not en-GB catalog. Not final production casting. Voices from upstream docs: tara, leah, jess, leo, dan, mia, zac, zoe.",
+  "mapping": {
+    "vp_spk_a": {
+      "backend_voice_id": "tara",
+      "role_hint": "Content A / receptionist-style"
+    },
+    "vp_spk_b": {
+      "backend_voice_id": "leo",
+      "role_hint": "Content B / caller-style"
+    }
+  },
+  "fallback_voice": "tara",
+  "all_voices": ["tara", "leah", "jess", "leo", "dan", "mia", "zac", "zoe"]
+}
