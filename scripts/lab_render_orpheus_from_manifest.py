@@ -288,20 +288,58 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--codes-end-pad-ms", type=int, default=550)
     args = parser.parse_args(argv)
 
-    report = render_manifest(
-        args.manifest,
-        args.voice_map,
-        args.out_dir,
-        use_spoken_text=not args.use_display_text,
-        limit=args.limit,
-        model_name=args.model_name,
-        max_model_len=args.max_model_len,
-        temperature=args.temperature,
-        repetition_penalty=args.repetition_penalty,
-        max_tokens=args.max_tokens,
-        end_pad_ms=args.end_pad_ms,
-        codes_end_pad_ms=args.codes_end_pad_ms,
-    )
+    out_dir = args.out_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        report = render_manifest(
+            args.manifest,
+            args.voice_map,
+            out_dir,
+            use_spoken_text=not args.use_display_text,
+            limit=args.limit,
+            model_name=args.model_name,
+            max_model_len=args.max_model_len,
+            temperature=args.temperature,
+            repetition_penalty=args.repetition_penalty,
+            max_tokens=args.max_tokens,
+            end_pad_ms=args.end_pad_ms,
+            codes_end_pad_ms=args.codes_end_pad_ms,
+        )
+    except SystemExit as exc:
+        # Persist a failure report so notebook can show the real error
+        fail_path = out_dir / "lab_render_report.json"
+        fail = {
+            "backend": "orpheus",
+            "ok_count": 0,
+            "fail_count": 1,
+            "segments": [],
+            "error": str(exc),
+            "compatibility_notes": [
+                "Render aborted before/during model load. "
+                "On Colab prefer in-notebook render_manifest() after Cell 4 import "
+                "(avoid os.system subprocess after CUDA init)."
+            ],
+        }
+        fail_path.write_text(json.dumps(fail, ensure_ascii=False, indent=2) + "\n")
+        print(f"Wrote failure report {fail_path}", file=sys.stderr)
+        raise
+    except Exception as exc:
+        fail_path = out_dir / "lab_render_report.json"
+        fail = {
+            "backend": "orpheus",
+            "ok_count": 0,
+            "fail_count": 1,
+            "segments": [],
+            "error": f"{type(exc).__name__}: {exc}",
+            "compatibility_notes": [
+                "Unhandled exception during render. See error field."
+            ],
+        }
+        fail_path.write_text(json.dumps(fail, ensure_ascii=False, indent=2) + "\n")
+        print(f"Wrote failure report {fail_path}", file=sys.stderr)
+        print(f"RENDER ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 2
+
     return 0 if report["fail_count"] == 0 else 1
 
 
