@@ -154,6 +154,7 @@ Uses the **same** `ielts-s2a prepare` manifest as Kokoro for fair comparison.
 ## CosyVoice3 lab (expressiveness)
 
 - Notebook: `notebooks/colab_cosyvoice3_manifest_lab.ipynb`
+- **Build refs first:** `notebooks/colab_build_cosyvoice_refs_from_kokoro.ipynb` (16 kHz mono + prompt_text)
 - Prep: [`cosyvoice3-colab-prep.md`](cosyvoice3-colab-prep.md)
 - Implement notes: [`cosyvoice3-implement.md`](cosyvoice3-implement.md)
 - Voice map (Kokoro wav as ref): `configs/voice_maps/cosyvoice3_from_kokoro_part1.json`

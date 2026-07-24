@@ -28,3 +28,26 @@ Caveats: synthetic ref = CosyVoice clones **Kokoro timbre**, not a real human; q
 ## Notebook
 
 `notebooks/colab_cosyvoice3_manifest_lab.ipynb` — numbered cells, sequential run (no Run-all required for Cosy path; no Orpheus-style Restart unless pip breaks ABI).
+
+## Generate refs with Kokoro first (recommended)
+
+Notebook: `notebooks/colab_build_cosyvoice_refs_from_kokoro.ipynb`  
+Script: `scripts/lab_build_cosyvoice_refs_from_kokoro.py`
+
+```bash
+# on Colab, inside ielts-script2audio repo
+pip install -e ".[dev]" kokoro soundfile torchaudio
+apt-get install -y espeak-ng
+python scripts/lab_build_cosyvoice_refs_from_kokoro.py --out-dir voice_bank/cosy_refs
+```
+
+Outputs (CosyVoice-ready):
+
+| File | Spec |
+|------|------|
+| `spk_a_ref.wav` / `spk_b_ref.wav` | mono PCM16 **16 kHz** |
+| `refs_manifest.json` | prompt_text + paths + duration |
+| `voice_map_runtime.json` | `vp_spk_*` → ref + prompt_text |
+
+Then run `colab_cosyvoice3_manifest_lab.ipynb`.
+
