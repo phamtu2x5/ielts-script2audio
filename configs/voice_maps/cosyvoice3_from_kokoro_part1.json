@@ -11,13 +11,13 @@
     "vp_spk_a": {
       "label": "spk_a_from_kokoro_bf_emma",
       "ref_wav": "voice_bank/cosy_refs/spk_a_ref.wav",
-      "prompt_text": "You are a helpful assistant.<|endofprompt|>Good morning, City Library. How can I help you?",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Good morning, and welcome to City Library. How can I help you today? I can help with membership, borrowing books, or finding a study desk.",
       "default_instruct": "You are a helpful assistant. Speak clearly and calmly in English.<|endofprompt|>"
     },
     "vp_spk_b": {
       "label": "spk_b_from_kokoro_bm_george",
       "ref_wav": "voice_bank/cosy_refs/spk_b_ref.wav",
-      "prompt_text": "You are a helpful assistant.<|endofprompt|>Hello. I'd like to join the library, please.",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Hello. I'd like to join the library, please. I have just moved to the area and I need a membership card so I can borrow books and use the computers.",
       "default_instruct": "You are a helpful assistant. Speak clearly and calmly in English.<|endofprompt|>"
     }
   },

@@ -45,7 +45,7 @@ Outputs (CosyVoice-ready):
 
 | File | Spec |
 |------|------|
-| `spk_a_ref.wav` / `spk_b_ref.wav` | mono PCM16 **16 kHz** |
+| `spk_a_ref.wav` / `spk_b_ref.wav` | mono PCM16 **16 kHz**, target **~6–12 s** per ref |
 | `refs_manifest.json` | prompt_text + paths + duration |
 | `voice_map_runtime.json` | `vp_spk_*` → ref + prompt_text |
 

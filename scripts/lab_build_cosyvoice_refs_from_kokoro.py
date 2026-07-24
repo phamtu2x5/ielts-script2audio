@@ -29,21 +29,30 @@ from typing import Any
 
 
 # Short, clean lines — good for zero-shot prompt (avoid long spelling strings)
+# Longer lines (~8–12s target) for CosyVoice zero-shot; short 3–4s refs clone poorly.
+# Keep plain conversational English (no long spelling runs). Exact text = prompt body.
 DEFAULT_SPEAKERS: list[dict[str, str]] = [
     {
         "speaker_key": "spk_a",
         "voice_profile_id": "vp_spk_a",
         "kokoro_voice": "bf_emma",
         "ref_basename": "spk_a_ref.wav",
-        # Exact words Kokoro will speak (and CosyVoice prompt_text body)
-        "ref_line": "Good morning, City Library. How can I help you?",
+        "ref_line": (
+            "Good morning, and welcome to City Library. "
+            "How can I help you today? "
+            "I can help with membership, borrowing books, or finding a study desk."
+        ),
     },
     {
         "speaker_key": "spk_b",
         "voice_profile_id": "vp_spk_b",
         "kokoro_voice": "bm_george",
         "ref_basename": "spk_b_ref.wav",
-        "ref_line": "Hello. I'd like to join the library, please.",
+        "ref_line": (
+            "Hello. I'd like to join the library, please. "
+            "I have just moved to the area and I need a membership card "
+            "so I can borrow books and use the computers."
+        ),
     },
 ]
 
