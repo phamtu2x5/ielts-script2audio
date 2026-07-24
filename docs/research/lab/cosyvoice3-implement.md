@@ -120,3 +120,20 @@ from cosyvoice.cli.cosyvoice import AutoModel
 
 CosyVoice still uses GPU via **PyTorch** for the main model; `onnxruntime` here is mainly for frontend ONNX helpers.
 
+## Colab pitfall: `No module named whisper`
+
+CosyVoice frontend imports OpenAI Whisper (`import whisper`).
+
+PyPI package name is **`openai-whisper`** (not a package named `whisper` alone).
+
+```bash
+pip install openai-whisper
+```
+
+Also: `pip install -r requirements.txt` may **partially fail** on Colab (wheel build errors). Still install critical packages explicitly:
+
+```bash
+pip uninstall -y onnxruntime-gpu
+pip install HyperPyYAML modelscope torchaudio onnxruntime openai-whisper
+```
+
