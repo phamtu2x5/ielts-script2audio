@@ -150,3 +150,13 @@ Uses the **same** `ielts-s2a prepare` manifest as Kokoro for fair comparison.
 | Orpheus lab assets | Ready (notebook + scripts) |
 | Audio render in agent session | `NOT_EXECUTED` (needs your Colab/GPU) |
 | Final TTS selection | `not_selected` |
+
+## CosyVoice3 lab (expressiveness)
+
+- Notebook: `notebooks/colab_cosyvoice3_manifest_lab.ipynb`
+- Prep: [`cosyvoice3-colab-prep.md`](cosyvoice3-colab-prep.md)
+- Implement notes: [`cosyvoice3-implement.md`](cosyvoice3-implement.md)
+- Voice map (Kokoro wav as ref): `configs/voice_maps/cosyvoice3_from_kokoro_part1.json`
+
+**Kokoro audio as CosyVoice ref:** allowed for lab (synthetic prompt). Replace with real consented refs later if needed.
+

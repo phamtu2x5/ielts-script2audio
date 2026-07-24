@@ -17,3 +17,4 @@ lab_audio/
 *.wav
 *.mp3
 *.flac
+voice_bank/*.wav

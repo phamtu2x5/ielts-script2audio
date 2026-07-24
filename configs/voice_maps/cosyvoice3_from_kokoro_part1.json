@@ -1,0 +1,27 @@
+{
+  "backend": "fun-cosyvoice3-0.5b-2512",
+  "mode_default": "zero_shot",
+  "notes": [
+    "Lab map: voice_profile_id → Kokoro-rendered ref wav (synthetic).",
+    "ref_wav paths are relative to the CosyVoice lab workdir or absolute on Colab.",
+    "Generate refs first with Kokoro (bf_emma / bm_george) then point paths here.",
+    "prompt_text must match what was spoken in the ref wav (use spoken_text of that line)."
+  ],
+  "mapping": {
+    "vp_spk_a": {
+      "label": "spk_a_from_kokoro_bf_emma",
+      "ref_wav": "voice_bank/cosy_refs/spk_a_ref.wav",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Good morning, City Library. How can I help you?",
+      "default_instruct": "You are a helpful assistant. Speak clearly and calmly in English.<|endofprompt|>"
+    },
+    "vp_spk_b": {
+      "label": "spk_b_from_kokoro_bm_george",
+      "ref_wav": "voice_bank/cosy_refs/spk_b_ref.wav",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Hello. I'd like to join the library, please.",
+      "default_instruct": "You are a helpful assistant. Speak clearly and calmly in English.<|endofprompt|>"
+    }
+  },
+  "tense_instruct": "You are a helpful assistant. Speak slightly faster, more urgent and tense.<|endofprompt|>",
+  "model_dir": "pretrained_models/Fun-CosyVoice3-0.5B",
+  "hf_model_id": "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"
+}
