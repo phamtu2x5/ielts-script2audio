@@ -188,13 +188,14 @@ def build_refs(
             assert wf.getsampwidth() == 2
             assert wf.getframerate() == target_sr
 
+        rel = str(Path("voice_bank/cosy_refs") / sp["ref_basename"])
         entry = {
             "speaker_key": sp["speaker_key"],
             "voice_profile_id": sp["voice_profile_id"],
             "kokoro_voice": voice,
             "lang_code": lang_code,
-            "ref_wav": str(wav_path.resolve()),
-            "ref_wav_relative": str(Path("voice_bank/cosy_refs") / sp["ref_basename"]),
+            "ref_wav": rel,
+            "ref_wav_relative": rel,
             "sample_rate_hz": target_sr,
             "channels": 1,
             "sampwidth_bytes": 2,
@@ -211,8 +212,8 @@ def build_refs(
         entries.append(entry)
         mapping[sp["voice_profile_id"]] = {
             "label": f"{sp['speaker_key']}_from_kokoro_{voice}",
-            "ref_wav": str(wav_path.resolve()),
-            "ref_wav_relative": entry["ref_wav_relative"],
+            "ref_wav": rel,
+            "ref_wav_relative": rel,
             "prompt_text": prompt_text,
             "ref_line": text,
             "kokoro_voice": voice,

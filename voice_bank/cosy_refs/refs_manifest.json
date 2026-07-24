@@ -1,0 +1,60 @@
+{
+  "artifact_type": "cosyvoice_zero_shot_refs",
+  "generator": "kokoro",
+  "target_format": {
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "pcm": "int16",
+    "prompt_text_rule": "PROMPT_PREFIX + exact spoken ref_line",
+    "prompt_prefix": "You are a helpful assistant.<|endofprompt|>",
+    "cosyvoice_api": "inference_zero_shot(tts_text, prompt_text, prompt_wav)",
+    "docs": "https://github.com/FunAudioLLM/CosyVoice"
+  },
+  "speakers": [
+    {
+      "speaker_key": "spk_a",
+      "voice_profile_id": "vp_spk_a",
+      "kokoro_voice": "bf_emma",
+      "lang_code": "b",
+      "ref_wav": "voice_bank/cosy_refs/spk_a_ref.wav",
+      "ref_wav_relative": "voice_bank/cosy_refs/spk_a_ref.wav",
+      "sample_rate_hz": 16000,
+      "channels": 1,
+      "sampwidth_bytes": 2,
+      "duration_sec": 8.4,
+      "ref_line": "Good morning, and welcome to City Library. How can I help you today? I can help with membership, borrowing books, or finding a study desk.",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Good morning, and welcome to City Library. How can I help you today? I can help with membership, borrowing books, or finding a study desk.",
+      "format_notes": [
+        "mono PCM16 WAV",
+        "sample_rate=16000 (CosyVoice load_wav target)",
+        "prompt_text body equals ref_line",
+        "synthetic Kokoro ref — lab only",
+        "paths are repo-relative for git clone on Colab"
+      ]
+    },
+    {
+      "speaker_key": "spk_b",
+      "voice_profile_id": "vp_spk_b",
+      "kokoro_voice": "bm_george",
+      "lang_code": "b",
+      "ref_wav": "voice_bank/cosy_refs/spk_b_ref.wav",
+      "ref_wav_relative": "voice_bank/cosy_refs/spk_b_ref.wav",
+      "sample_rate_hz": 16000,
+      "channels": 1,
+      "sampwidth_bytes": 2,
+      "duration_sec": 10.025,
+      "ref_line": "Hello. I'd like to join the library, please. I have just moved to the area and I need a membership card so I can borrow books and use the computers.",
+      "prompt_text": "You are a helpful assistant.<|endofprompt|>Hello. I'd like to join the library, please. I have just moved to the area and I need a membership card so I can borrow books and use the computers.",
+      "format_notes": [
+        "mono PCM16 WAV",
+        "sample_rate=16000 (CosyVoice load_wav target)",
+        "prompt_text body equals ref_line",
+        "synthetic Kokoro ref — lab only",
+        "paths are repo-relative for git clone on Colab"
+      ]
+    }
+  ],
+  "lab_only": true,
+  "not_final_tts_selection": true,
+  "committed_in_git": true
+}

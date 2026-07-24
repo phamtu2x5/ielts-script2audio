@@ -17,4 +17,6 @@ lab_audio/
 *.wav
 *.mp3
 *.flac
-voice_bank/*.wav
+
+# Ignore generated audio globally, but commit small CosyVoice lab refs
+!voice_bank/cosy_refs/*.wav
