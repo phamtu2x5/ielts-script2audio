@@ -91,3 +91,16 @@ prepare → manifest
 - https://github.com/FunAudioLLM/CosyVoice  
 - https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512  
 - https://funaudiollm.github.io/cosyvoice3/
+
+## Colab pitfall: `No module named hyperpyyaml`
+
+PyPI package name is **`HyperPyYAML`** (import: `hyperpyyaml`).
+
+```bash
+cd /content/CosyVoice
+pip install -r requirements.txt
+pip install HyperPyYAML modelscope torchaudio
+```
+
+Then retry `from cosyvoice.cli.cosyvoice import AutoModel`.
+
