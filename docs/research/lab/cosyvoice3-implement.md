@@ -104,3 +104,19 @@ pip install HyperPyYAML modelscope torchaudio
 
 Then retry `from cosyvoice.cli.cosyvoice import AutoModel`.
 
+## Colab pitfall: `libcudart.so.13` when importing CosyVoice
+
+Often caused by **`onnxruntime-gpu`** (needs CUDA 13), not by missing HyperPyYAML.
+
+```bash
+pip uninstall -y onnxruntime-gpu
+pip install onnxruntime HyperPyYAML modelscope torchaudio
+```
+
+Then:
+```python
+from cosyvoice.cli.cosyvoice import AutoModel
+```
+
+CosyVoice still uses GPU via **PyTorch** for the main model; `onnxruntime` here is mainly for frontend ONNX helpers.
+
